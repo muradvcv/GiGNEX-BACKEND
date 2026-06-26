@@ -35,8 +35,46 @@ async function run() {
     const myDB = client.db("gignex_db");
     const taskCollection = myDB.collection("tasks");
     const userCollection = myDB.collection("user");
+    const proposalCollection = myDB.collection("proposal")
 
-   
+
+    // post proposal
+    // post proposal
+    app.post("/api/proposal", async (req, res) => {
+      try {
+        const proposal = req.body;
+
+        // basic validation (important)
+        if (!proposal || !proposal.taskId || !proposal.clientId) {
+          return res.status(400).send({
+            success: false,
+            message: "taskId and clientId required",
+          });
+        }
+
+        const newProposal = {
+          ...proposal,
+          status: "pending", // default status (VERY IMPORTANT)
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        const result = await proposalCollection.insertOne(newProposal);
+
+        res.send({
+          success: true,
+          message: "Proposal created successfully",
+          insertedId: result.insertedId,
+        });
+      } catch (error) {
+        res.status(500).send({
+          success: false,
+          message: "Server error",
+          error: error.message,
+        });
+      }
+    });
+
 
     // get one freelancer
     app.get("/api/freelancers/:id", async (req, res) => {

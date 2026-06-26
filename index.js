@@ -36,6 +36,8 @@ async function run() {
     const taskCollection = myDB.collection("tasks");
     const userCollection = myDB.collection("user");
 
+   
+
     // get one freelancer
     app.get("/api/freelancers/:id", async (req, res) => {
       try {
@@ -104,17 +106,32 @@ async function run() {
       try {
         const page = Number(req.query.page) || 1;
         const limit = Number(req.query.limit) || 6;
+        const search = req.query.search || "";
 
         const skip = (page - 1) * limit;
 
-        const totalTasks = await taskCollection.countDocuments();
+        const query = {};
+
+        if (search) {
+          query.title = {
+            $regex: search,
+            $options: "i",
+          };
+        }
+
+        console.log("Search:", search);
+        console.log("Query:", query);
+
+        const totalTasks = await taskCollection.countDocuments(query);
 
         const tasks = await taskCollection
-          .find()
+          .find(query)
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit)
           .toArray();
+
+        console.log("Tasks:", tasks);
 
         res.send({
           tasks,
@@ -128,7 +145,6 @@ async function run() {
         });
       }
     });
-
 
 
     // delete task

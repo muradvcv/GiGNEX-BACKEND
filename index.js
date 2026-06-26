@@ -119,9 +119,6 @@ async function run() {
           };
         }
 
-        console.log("Search:", search);
-        console.log("Query:", query);
-
         const totalTasks = await taskCollection.countDocuments(query);
 
         const tasks = await taskCollection
@@ -131,7 +128,6 @@ async function run() {
           .limit(limit)
           .toArray();
 
-        console.log("Tasks:", tasks);
 
         res.send({
           tasks,

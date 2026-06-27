@@ -38,43 +38,34 @@ async function run() {
     const proposalCollection = myDB.collection("proposal")
 
 
-    // post proposal
-    // post proposal
+    // POST Proposal
     app.post("/api/proposal", async (req, res) => {
       try {
         const proposal = req.body;
 
-        // basic validation (important)
-        if (!proposal || !proposal.taskId || !proposal.clientId) {
+        const alreadyApplied = await proposalCollection.findOne({
+          task_id: proposal.task_id,
+          freelancer_email: proposal.freelancer_email,
+        });
+
+        if (alreadyApplied) {
           return res.status(400).send({
-            success: false,
-            message: "taskId and clientId required",
+            message: "Already applied for this task",
           });
         }
 
-        const newProposal = {
-          ...proposal,
-          status: "pending", // default status (VERY IMPORTANT)
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
+        proposal.status = "pending";
+        proposal.submitted_at = new Date();
 
-        const result = await proposalCollection.insertOne(newProposal);
+        const result = await proposalCollection.insertOne(proposal);
 
-        res.send({
-          success: true,
-          message: "Proposal created successfully",
-          insertedId: result.insertedId,
-        });
+        res.send(result);
       } catch (error) {
         res.status(500).send({
-          success: false,
-          message: "Server error",
-          error: error.message,
+          message: error.message,
         });
       }
     });
-
 
     // get one freelancer
     app.get("/api/freelancers/:id", async (req, res) => {

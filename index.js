@@ -37,31 +37,77 @@ async function run() {
     const userCollection = myDB.collection("user");
     const proposalCollection = myDB.collection("proposal")
 
+    // get proposals by client
+    
+
+    // get proposal by freelancer
+    app.get("/api/proposal/freelancer/:email", async (req, res) => {
+      try {
+        const email = req.params.email;
+
+        const proposals = await proposalCollection
+          .find({ freelancer_email: email })
+          .sort({ submitted_at: -1 })
+          .toArray();
+
+        return res.send({
+          success: true,
+          data: proposals,
+        });
+      } catch (error) {
+        return res.status(500).send({
+          success: false,
+          message: error.message,
+        });
+      }
+    });
 
     // POST Proposal
     app.post("/api/proposal", async (req, res) => {
       try {
-        const proposal = req.body;
+        const {
+          task_id,
+          freelancer_email,
+          proposed_budget,
+          estimated_days,
+          cover_note,
+        } = req.body;
+
+        if (!task_id || !freelancer_email) {
+          return res.status(400).send({
+            success: false,
+            message: "Missing required fields",
+          });
+        }
 
         const alreadyApplied = await proposalCollection.findOne({
-          task_id: proposal.task_id,
-          freelancer_email: proposal.freelancer_email,
+          task_id,
+          freelancer_email,
         });
 
         if (alreadyApplied) {
           return res.status(400).send({
-            message: "Already applied for this task",
+            success: false,
+            message: "You already applied for this task",
           });
         }
 
-        proposal.status = "pending";
-        proposal.submitted_at = new Date();
+        const proposal = {
+          ...req.body,
+          status: "pending",
+          submitted_at: new Date(),
+        };
 
         const result = await proposalCollection.insertOne(proposal);
 
-        res.send(result);
+        return res.status(201).send({
+          success: true,
+          message: "Proposal submitted",
+          data: result,
+        });
       } catch (error) {
-        res.status(500).send({
+        return res.status(500).send({
+          success: false,
           message: error.message,
         });
       }

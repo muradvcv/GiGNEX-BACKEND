@@ -29,13 +29,26 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-
-
-
     const myDB = client.db("gignex_db");
     const taskCollection = myDB.collection("tasks");
     const userCollection = myDB.collection("user");
     const proposalCollection = myDB.collection("proposal")
+
+
+
+
+
+
+    // Get proposals by task id
+    app.get("/api/proposal/task/:taskId", async (req, res) => {
+      const { taskId } = req.params;
+
+      const proposals = await proposalCollection
+        .find({ task_id: taskId })
+        .toArray();
+
+      res.send(proposals);
+    });
 
     // get proposals by client email
     app.get("/api/proposal/client/:email", async (req, res) => {

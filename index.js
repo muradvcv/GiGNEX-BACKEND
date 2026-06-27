@@ -37,8 +37,28 @@ async function run() {
     const userCollection = myDB.collection("user");
     const proposalCollection = myDB.collection("proposal")
 
-    // get proposals by client
-    
+    // get proposals by client email
+    app.get("/api/proposal/client/:email", async (req, res) => {
+      try {
+        const email = req.params.email;
+
+        const proposals = await proposalCollection
+          .find({ client_email: email })
+          .sort({ submitted_at: -1 })
+          .toArray();
+
+        res.send({
+          success: true,
+          data: proposals,
+        });
+      } catch (error) {
+        res.status(500).send({
+          success: false,
+          message: error.message,
+        });
+      }
+    });
+
 
     // get proposal by freelancer
     app.get("/api/proposal/freelancer/:email", async (req, res) => {

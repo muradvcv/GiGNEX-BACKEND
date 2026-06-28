@@ -33,9 +33,89 @@ async function run() {
     const taskCollection = myDB.collection("tasks");
     const userCollection = myDB.collection("user");
     const proposalCollection = myDB.collection("proposal")
+    const paymentCollection=myDB.collection("payments")
 
 
+    // post payment data in db
+    app.post("/payment", async (req, res) => {
+      try {
+        const {
+          proposalId,
+          taskId,
+          amount,
+          userID,
+          userEmail,
+          userName,
+        } = req.body;
 
+        // Save payment
+        await paymentCollection.insertOne({
+          proposalId,
+          taskId,
+          amount,
+          userID,
+          userEmail,
+          userName,
+          paidAt: new Date(),
+        });
+
+        // Accept selected proposal
+        await proposalCollection.updateOne(
+          {
+            _id: new ObjectId(proposalId),
+          },
+          {
+            $set: {
+              status: "accepted",
+              acceptedAt: new Date(),
+            },
+          }
+        );
+
+        // Reject all other proposals of this task
+        await proposalCollection.updateMany(
+          {
+            task_id: taskId,
+            _id: {
+              $ne: new ObjectId(proposalId),
+            },
+          },
+          {
+            $set: {
+              status: "rejected",
+            },
+          }
+        );
+
+        // Update task
+        await taskCollection.updateOne(
+          {
+            _id: new ObjectId(taskId),
+          },
+          {
+            $set: {
+              status: "in_progress",
+              assignedFreelancerId: userID,
+              assignedFreelancerEmail: userEmail,
+              assignedFreelancerName: userName,
+              assignedAt: new Date(),
+            },
+          }
+        );
+
+        res.send({
+          success: true,
+          message: "Payment successful. Proposal accepted and task started.",
+        });
+      } catch (error) {
+        console.log(error);
+
+        res.status(500).send({
+          success: false,
+          message: error.message,
+        });
+      }
+    });
 
 
 

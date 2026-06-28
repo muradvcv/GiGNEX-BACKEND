@@ -35,7 +35,39 @@ async function run() {
     const proposalCollection = myDB.collection("proposal")
     const paymentCollection = myDB.collection("payments")
 
-  
+
+    // get active project by freelancer id
+    app.get("/api/freelancer/activeprojects/:id", async (req, res) => {
+      const freelancerId = req.params.id;
+
+      const projects = await taskCollection.find({
+        assignedFreelancerId: freelancerId,
+        status: {
+          $in: ["in_progress", "completed"],
+        },
+      }).toArray();
+
+      res.send(projects);
+    });
+
+
+
+    // Get payments by freelancer id
+    app.get("/api/payments/freelancer/:freelancerId", async (req, res) => {
+      const { freelancerId } = req.params;
+
+      const payments = await paymentCollection.find({
+        freelancerId: freelancerId,
+      }).toArray();
+
+      res.send({
+        success: true,
+        data: payments,
+      });
+    });
+
+
+
 
     // Get payments by client id
     app.get("/api/payments/client/:clientId", async (req, res) => {

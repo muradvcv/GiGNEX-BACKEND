@@ -33,7 +33,23 @@ async function run() {
     const taskCollection = myDB.collection("tasks");
     const userCollection = myDB.collection("user");
     const proposalCollection = myDB.collection("proposal")
-    const paymentCollection=myDB.collection("payments")
+    const paymentCollection = myDB.collection("payments")
+
+  
+
+    // Get payments by client id
+    app.get("/api/payments/client/:clientId", async (req, res) => {
+      const { clientId } = req.params;
+
+      const payments = await paymentCollection.find({
+        clientId: clientId,
+      }).toArray();
+
+      res.send({
+        success: true,
+        data: payments,
+      });
+    });
 
 
     // post payment data in db
@@ -46,6 +62,9 @@ async function run() {
           freelancerId,
           freelancerEmail,
           freelancerName,
+          clientId,
+          clientName,
+          clientEmail,
         } = req.body;
 
         // Save payment
@@ -56,6 +75,9 @@ async function run() {
           freelancerId,
           freelancerEmail,
           freelancerName,
+          clientId,
+          clientName,
+          clientEmail,
           paidAt: new Date(),
         });
 

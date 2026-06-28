@@ -43,9 +43,9 @@ async function run() {
           proposalId,
           taskId,
           amount,
-          userID,
-          userEmail,
-          userName,
+          freelancerId,
+          freelancerEmail,
+          freelancerName,
         } = req.body;
 
         // Save payment
@@ -53,9 +53,9 @@ async function run() {
           proposalId,
           taskId,
           amount,
-          userID,
-          userEmail,
-          userName,
+          freelancerId,
+          freelancerEmail,
+          freelancerName,
           paidAt: new Date(),
         });
 
@@ -72,17 +72,16 @@ async function run() {
           }
         );
 
-        // Reject all other proposals of this task
+        // Reject ALL OTHER proposals of the same task
         await proposalCollection.updateMany(
           {
             task_id: taskId,
-            _id: {
-              $ne: new ObjectId(proposalId),
-            },
+            _id: { $ne: new ObjectId(proposalId) }, // except accepted proposal
           },
           {
             $set: {
               status: "rejected",
+              rejectedAt: new Date(),
             },
           }
         );
@@ -95,9 +94,9 @@ async function run() {
           {
             $set: {
               status: "in_progress",
-              assignedFreelancerId: userID,
-              assignedFreelancerEmail: userEmail,
-              assignedFreelancerName: userName,
+              assignedFreelancerId: freelancerId,
+              assignedFreelancerEmail: freelancerEmail,
+              assignedFreelancerName: freelancerName,
               assignedAt: new Date(),
             },
           }
@@ -105,7 +104,7 @@ async function run() {
 
         res.send({
           success: true,
-          message: "Payment successful. Proposal accepted and task started.",
+          message: "Payment successful. Proposal accepted and others rejected.",
         });
       } catch (error) {
         console.log(error);
@@ -116,7 +115,6 @@ async function run() {
         });
       }
     });
-
 
 
     // Get proposals by task id

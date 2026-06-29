@@ -35,6 +35,34 @@ async function run() {
     const proposalCollection = myDB.collection("proposal")
     const paymentCollection = myDB.collection("payments")
 
+    // delete task by admin (api)
+    app.delete("/api/admin/tasks/:id", async (req, res) => {
+      try {
+        const { id } = req.params;
+
+        const result = await taskCollection.deleteOne({
+          _id: new ObjectId(id),
+        });
+
+        if (result.deletedCount === 0) {
+          return res.status(404).send({
+            success: false,
+            message: "Task not found",
+          });
+        }
+
+        res.send({
+          success: true,
+          message: "Task deleted successfully",
+        });
+      } catch (error) {
+        res.status(500).send({
+          success: false,
+          message: error.message,
+        });
+      }
+    });
+
     // user blcoke by userID
     app.patch("/api/users/block", async (req, res) => {
       try {

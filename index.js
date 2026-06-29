@@ -35,7 +35,107 @@ async function run() {
     const proposalCollection = myDB.collection("proposal")
     const paymentCollection = myDB.collection("payments")
 
-    
+    // user blcoke by userID
+    app.patch("/api/users/block", async (req, res) => {
+      try {
+        const { userId, isBlocked } = req.body;
+
+        if (!userId) {
+          return res.status(400).send({
+            success: false,
+            message: "User ID is required",
+          });
+        }
+
+        const result = await userCollection.updateOne(
+          { _id: new ObjectId(userId) },
+          {
+            $set: {
+              isBlocked: isBlocked,
+            },
+          }
+        );
+
+        if (result.matchedCount === 0) {
+          return res.status(404).send({
+            success: false,
+            message: "User not found",
+          });
+        }
+
+        res.send({
+          success: true,
+          message: `User ${isBlocked ? "blocked" : "unblocked"} successfully`,
+        });
+      } catch (error) {
+        res.status(500).send({
+          success: false,
+          message: error.message,
+        });
+      }
+    });
+
+    // get all payment data
+    app.get("/api/admin/payments", async (req, res) => {
+      try {
+        const payments = await paymentCollection
+          .find({})
+          .sort({ paidAt: -1 })
+          .toArray();
+
+        res.send({
+          success: true,
+          data: payments,
+        });
+      } catch (error) {
+        res.status(500).send({
+          success: false,
+          message: error.message,
+        });
+      }
+    });
+
+    // get all task
+    app.get("/api/admin/tasks", async (req, res) => {
+      try {
+        const tasks = await taskCollection
+          .find({})
+          .sort({ createdAt: -1 })
+          .toArray();
+
+        res.send({
+          success: true,
+          data: tasks,
+        });
+      } catch (error) {
+        res.status(500).send({
+          success: false,
+          message: error.message,
+        });
+      }
+    });
+
+
+    // get all user
+    app.get("/api/admin/users", async (req, res) => {
+      try {
+        const users = await userCollection
+          .find({})
+          .sort({ createdAt: -1 })
+          .toArray();
+
+        res.send({
+          success: true,
+          data: users,
+        });
+      } catch (error) {
+        res.status(500).send({
+          success: false,
+          message: error.message,
+        });
+      }
+    });
+
 
     // get admin overview all data (summary data)
     app.get("/api/admin/dashboard", async (req, res) => {

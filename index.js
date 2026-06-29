@@ -42,8 +42,40 @@ const paymentCollection = myDB.collection("payments")
 const reviewCollection = myDB.collection("review")
 
 
+// get top freelancer
+app.get("/top-freelancers", async (req, res) => {
+  const result = await reviewCollection.aggregate([
+    {
+      $group: {
+        _id: "$freelancerId",
+        freelancerId: { $first: "$freelancerId" },
+        freelancerName: { $first: "$freelancerName" },
+        freelancerEmail: { $first: "$freelancerEmail" },
+        totalReviews: { $sum: 1 },
+        avgRating: { $avg: "$rating" },
+        totalLikes: { $sum: "$like" },
+        taskId: { $last: "$taskId" },
+        clientId: { $last: "$clientId" },
+        clientName: { $last: "$clientName" },
+        clientEmail: { $last: "$clientEmail" },
+        comment: { $last: "$comment" },
+        createdAt: { $last: "$createdAt" },
+      },
+    },
+    {
+      $sort: {
+        totalReviews: -1,
+      },
+    },
+    {
+      $limit: 6,
+    },
+  ]).toArray();
 
-// get latest 6 featured tasks
+  res.send(result);
+});
+
+
 // Get latest 6 featured open tasks
 app.get("/api/tasks/featured", async (req, res) => {
   try {

@@ -35,8 +35,66 @@ async function run() {
     const proposalCollection = myDB.collection("proposal")
     const paymentCollection = myDB.collection("payments")
 
-
     
+
+    // get admin overview all data (summary data)
+    app.get("/api/admin/dashboard", async (req, res) => {
+      try {
+        const totalUsers = await userCollection.countDocuments();
+
+        const totalClients = await userCollection.countDocuments({
+          role: "client",
+        });
+
+        const totalFreelancers = await userCollection.countDocuments({
+          role: "freelancer",
+        });
+
+        const totalTasks = await taskCollection.countDocuments();
+
+        const openTasks = await taskCollection.countDocuments({
+          status: "open",
+        });
+
+        const inProgressTasks = await taskCollection.countDocuments({
+          status: "in_progress",
+        });
+
+        const completedTasks = await taskCollection.countDocuments({
+          status: "completed",
+        });
+
+        const totalPayments = await paymentCollection.countDocuments();
+
+        const payments = await paymentCollection.find({}).toArray();
+
+        const totalRevenue = payments.reduce(
+          (sum, payment) => sum + Number(payment.amount || 0),
+          0
+        );
+
+        res.send({
+          success: true,
+          data: {
+            totalUsers,
+            totalClients,
+            totalFreelancers,
+            totalTasks,
+            openTasks,
+            inProgressTasks,
+            completedTasks,
+            totalPayments,
+            totalRevenue,
+          },
+        });
+      } catch (error) {
+        res.status(500).send({
+          success: false,
+          message: error.message,
+        });
+      }
+    });
+
 
 
     // get active project by freelancer id

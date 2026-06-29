@@ -724,7 +724,7 @@ async function run() {
 }
 run().catch(console.dir);
 
-// 👇 এইটাই তোমার app.listen (এটাই missing ছিল)
-app.listen(process.env.PORT || 5000, () => {
-  console.log(`Server is running on port ${process.env.PORT || 5000}`);
-});
+
+// app.listen(process.env.PORT || 5000, () => {
+//   console.log(`Server is running on port ${process.env.PORT || 5000}`);
+// });

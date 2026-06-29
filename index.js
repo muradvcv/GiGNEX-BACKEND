@@ -34,6 +34,64 @@ async function run() {
     const userCollection = myDB.collection("user");
     const proposalCollection = myDB.collection("proposal")
     const paymentCollection = myDB.collection("payments")
+    const reviewCollection=myDB.collection("review")
+
+    // post review
+    app.post("/api/reviews", async (req, res) => {
+      try {
+        const review = req.body;
+
+        // basic validation (optional but good)
+        if (!review.taskId || !review.userName || !review.text) {
+          return res.status(400).json({
+            message: "Missing required fields",
+          });
+        }
+
+        const result = await reviewCollection.insertOne({
+          taskId: review.taskId,
+          userName: review.userName,
+          text: review.text,
+          createdAt: new Date(),
+        });
+
+        res.status(201).json({
+          success: true,
+          message: "Review added successfully",
+          insertedId: result.insertedId,
+        });
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({
+          success: false,
+          message: "Server error",
+        });
+      }
+    });
+
+    // deliveral link updload and task complete api
+    app.patch("/api/tasks/:id/deliverable", async (req, res) => {
+      const { id } = req.params;
+      const { deliverable_url } = req.body;
+
+      const result = await taskCollection.updateOne(
+        {
+          _id: new ObjectId(id),
+        },
+        {
+          $set: {
+            deliverable_url,
+            status: "completed",
+            completedAt: new Date(),
+          },
+        }
+      );
+
+      res.send({
+        success: true,
+        result,
+      });
+    });
 
     // delete task by admin (api)
     app.delete("/api/admin/tasks/:id", async (req, res) => {
@@ -649,6 +707,7 @@ async function run() {
     // post a new task by client
     app.post('/api/tasks', async (req, res) => {
       const task = req.body;
+      task.deliverable_url = "";
       task.createdAt = new Date();
       const result = await taskCollection.insertOne(task);
       res.send(result);

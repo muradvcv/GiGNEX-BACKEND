@@ -1,142 +1,188 @@
-🚀 SkillSwap / GiGNEX Backend API
-📌 Project Overview
+# 🚀 SkillSwap / GiGNEX Backend API
+### 📌 Freelance Micro-Task Marketplace REST API Server
 
-SkillSwap (GiGNEX Backend) is a RESTful API server for a freelance micro-task marketplace platform.
-It handles authentication, task management, proposals, payments, and admin control using Node.js, Express, MongoDB, Stripe, and BetterAuth/JWT.
+---
 
-🌐 Live & Repository Links
-Type	Link
-🌍 Live Frontend	https://gi-gnex.vercel.app/
-🖥️ Backend Repo	https://github.com/muradvcv/GiGNEX-BACKEND
-💻 Client Repo	https://github.com/muradvcv/GiGNEX
-🔐 Admin Credentials
-Field	Value
-Admin Email	admin@gmail.com
-Admin Password	Murad123$$
-🧑‍💻 Tech Stack
-Node.js
-Express.js
-MongoDB + Mongoose
-JWT Authentication
-BetterAuth (Google OAuth support)
-Stripe Payment Gateway
-dotenv for environment variables
-CORS enabled API
-👥 User Roles
+## 🌐 Live Project & Links
 
-The system supports 3 roles:
+| Type | Link |
+|------|------|
+| 🌍 Live Frontend | https://gi-gnex.vercel.app/ |
+| 🖥️ Backend Repository | https://github.com/muradvcv/GiGNEX-BACKEND |
+| 💻 Client Repository | https://github.com/muradvcv/GiGNEX |
 
-Role	Description
-👤 Client	Posts tasks, hires freelancers, makes payments
-💼 Freelancer	Applies for tasks, delivers work, earns money
-🛠️ Admin	Manages users, tasks, and platform safety
-⚙️ Core Features
-🔑 Authentication
-Email/Password login
-Google OAuth login
-JWT-based session security
-Role-based route protection
-📌 Task System
-Create / Edit / Delete tasks
-Task status: Open → In Progress → Completed
-Category filtering & search support
-📩 Proposal System
-Freelancers submit proposals per task
-Clients accept/reject proposals
-Only one accepted proposal per task
-💰 Payment System (Stripe)
-Secure checkout integration
-Payment confirmation endpoint
-Transaction history tracking
-⭐ Review System
-Clients can rate freelancers
-Store rating + feedback per task
-🗄️ Database Schema
-👤 Users Collection
-Field	Type
-name	String
-email	String
-image	String
-role	String (client / freelancer / admin)
-skills	Array
-bio	String
-isBlocked	Boolean
-createdAt	Date
-📌 Tasks Collection
-Field	Type
-title	String
-category	String
-description	String
-budget	Number
-deadline	Date
-client_email	String
-status	String
-deliverable_url	String
-createdAt	Date
-📩 Proposals Collection
-Field	Type
-task_id	ObjectId
-freelancer_email	String
-proposed_budget	Number
-estimated_days	Number
-cover_note	String
-status	String
-submitted_at	Date
-💳 Payments Collection
-Field	Type
-client_email	String
-freelancer_email	String
-task_id	ObjectId
-amount	Number
-transaction_id	String
-payment_status	String
-paid_at	Date
-⭐ Reviews Collection
-Field	Type
-task_id	ObjectId
-reviewer_email	String
-reviewee_email	String
-rating	Number
-comment	String
-created_at	Date
-🔒 Security Features
-JWT Authentication (HTTPOnly cookies)
-Role-based access control (RBAC)
-Block/unblock user system
-Protected API routes
-Stripe secure payment validation
-📊 API Highlights
-/auth/login
-/auth/register
-/tasks
-/proposals
-/payments/create-checkout-session
-/payments/verify
-/admin/users
-/admin/tasks
-🧠 Business Logic Flow
-Client posts a task
-Freelancer submits proposal
-Client accepts proposal
-Stripe payment completed
-Task moves to In Progress
-Freelancer submits deliverable
-Task marked Completed
-Review is added
-🚀 Deployment Notes
-Backend deployed on production server
-CORS configured for frontend domain
-Environment variables secured in .env
-MongoDB Atlas used for database
-Stripe in test/live mode supported
-📌 Notes for Evaluation
-Fully responsive frontend required
-No refresh login loss (persistent auth)
-No CORS / 404 / 500 errors in production
-Clean UI + role-based dashboards
-Minimum commits required (frontend + backend)
-📞 Contact
+---
 
-If you face any issue:
+## 🔐 Admin Access
+
+| Field | Value |
+|------|------|
+| Email | admin@gmail.com |
+| Password | Murad123$$ |
+
+---
+
+## 📌 Project Overview
+
+SkillSwap (GiGNEX Backend) is a **RESTful API system** for a freelance micro-task marketplace.
+
+It supports:
+- Task posting & management  
+- Freelancer proposals  
+- Stripe payment system  
+- Admin control panel  
+- Role-based authentication  
+
+Built using:
+Node.js • Express.js • MongoDB • JWT • Stripe • BetterAuth
+
+---
+
+## 🧑‍💻 Tech Stack
+
+- Node.js
+- Express.js
+- MongoDB + Mongoose
+- JWT Authentication (HTTPOnly Cookies)
+- BetterAuth (Google OAuth)
+- Stripe Payment Gateway
+- dotenv
+- CORS
+
+---
+
+## 👥 User Roles
+
+| Role | Description |
+|------|-------------|
+| 👤 Client | Posts tasks, hires freelancers, makes payments |
+| 💼 Freelancer | Applies for tasks, completes work, earns money |
+| 🛠️ Admin | Manages users, tasks, payments, and system safety |
+
+---
+
+## ⚙️ Core Features
+
+### 🔑 Authentication System
+- Email/password login
+- Google OAuth login
+- JWT secure sessions
+- Role-based route protection
+
+---
+
+### 📌 Task Management
+- Create / Edit / Delete tasks
+- Status flow: **Open → In Progress → Completed**
+- Category filtering & search
+
+---
+
+### 📩 Proposal System
+- Freelancers submit proposals
+- Client accepts/rejects proposals
+- One freelancer per task approval
+
+---
+
+### 💰 Payment System (Stripe)
+- Secure Stripe checkout
+- Payment verification API
+- Transaction history tracking
+
+---
+
+### ⭐ Review System
+- Client rating freelancers
+- Store feedback per task
+
+---
+
+## 🗄️ Database Schema
+
+### 👤 Users Collection
+name, email, image, role, skills, bio, isBlocked, createdAt
+
+### 📌 Tasks Collection
+title, category, description, budget, deadline, client_email, status, deliverable_url, createdAt
+
+### 📩 Proposals Collection
+task_id, freelancer_email, proposed_budget, estimated_days, cover_note, status, submitted_at
+
+### 💳 Payments Collection
+client_email, freelancer_email, task_id, amount, transaction_id, payment_status, paid_at
+
+### ⭐ Reviews Collection
+task_id, reviewer_email, reviewee_email, rating, comment, created_at
+
+---
+
+## 🔒 Security Features
+
+- JWT Authentication (HTTPOnly cookies)
+- Role-based access control (RBAC)
+- Block / Unblock system
+- Protected API routes
+- Stripe payment validation
+
+---
+
+## 📊 API Endpoints
+
+### 🔐 Auth Routes
+- `/auth/login`
+- `/auth/register`
+
+### 📌 Task Routes
+- `/tasks`
+
+### 📩 Proposal Routes
+- `/proposals`
+
+### 💰 Payment Routes
+- `/payments/create-checkout-session`
+- `/payments/verify`
+
+### 🛠️ Admin Routes
+- `/admin/users`
+- `/admin/tasks`
+
+---
+
+## 🧠 System Workflow
+
+1. Client creates task  
+2. Freelancer sends proposal  
+3. Client accepts proposal  
+4. Stripe payment success  
+5. Task → In Progress  
+6. Freelancer submits deliverable  
+7. Task → Completed  
+8. Review submitted  
+
+---
+
+## 🚀 Deployment Notes
+
+- Backend deployed on production server
+- MongoDB Atlas database used
+- CORS configured for frontend
+- Stripe test/live enabled
+- Environment variables secured
+
+---
+
+## 📌 Important Requirements
+
+- No login loss on refresh
+- No CORS / 404 / server errors
+- Clean UI with role dashboards
+- Fully working production deployment
+
+---
+
+## 📞 Support
 
 📱 WhatsApp: +8801787256994
+
+---

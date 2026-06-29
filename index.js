@@ -36,6 +36,9 @@ async function run() {
     const paymentCollection = myDB.collection("payments")
 
 
+    
+
+
     // get active project by freelancer id
     app.get("/api/freelancer/activeprojects/:id", async (req, res) => {
       const freelancerId = req.params.id;

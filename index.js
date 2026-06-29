@@ -41,6 +41,30 @@ const proposalCollection = myDB.collection("proposal")
 const paymentCollection = myDB.collection("payments")
 const reviewCollection = myDB.collection("review")
 
+
+
+// get latest 6 featured tasks
+// Get latest 6 featured open tasks
+app.get("/api/tasks/featured", async (req, res) => {
+  try {
+    const tasks = await taskCollection
+      .find({ status: "open" })
+      .sort({ createdAt: -1 })
+      .limit(6)
+      .toArray();
+
+    res.status(200).send({
+      success: true,
+      data: tasks,
+    });
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
 // get reciew by freelancer id
 app.get("/api/reviews/freelancer/:id", async (req, res) => {
   try {
